@@ -2,4 +2,6 @@
 downloads/
 dist/
 vmlinuz64
-hypercore.gz
+initrd.gz
+hypercore.rsa
+hypercore.rsa.pub
