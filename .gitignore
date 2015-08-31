@@ -1,0 +1,5 @@
+.DS_Store
+downloads/
+dist/
+vmlinuz64
+hypercore.gz
