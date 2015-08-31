@@ -2,7 +2,6 @@
 # prerequisites: linux, wget, apt-get install squashfs-tools
 
 export TCL_SERVER=http://tinycorelinux.net/6.x/x86_64
-TAB=$(printf '\t')
 
 # generate ssh keypair
 ssh-keygen -f hypercore.rsa -t rsa -N ''
@@ -36,7 +35,6 @@ sudo sed -ix "/^tty1:/s#tty1#ttyS0#g" etc/inittab
 
 # configure ssh
 sudo cp usr/local/etc/ssh/sshd_config_example usr/local/etc/ssh/sshd_config
-# sudo sed -ix "s/AuthorizedKeysFile$TAB\.ssh\/authorized_keys/AuthorizedKeysFile$TAB\/opt\/authorized_keys/" usr/local/etc/ssh/sshd_config
 sudo mkdir var/ssh
 sudo chmod 0755 var/ssh
 sudo mkdir -p home/tc/.ssh
