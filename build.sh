@@ -18,10 +18,11 @@ wget -c -P downloads/ \
   $TCL_SERVER/tcz/linux-3.16.2_api_headers.tcz \
   $TCL_SERVER/tcz/openssl-1.0.0.tcz \
   $TCL_SERVER/tcz/openssh.tcz \
+  $TCL_SERVER/tcz/iproute2.tcz \
   $TCL_SERVER/tcz/wget.tcz
 
 # install packages
-for f in downloads/*.tcz; do unsquashfs -f -d dist $f; done
+for f in downloads/*.tcz; do echo "Unpacking $f" && unsquashfs -f -d dist $f; done
 
 # enter dist folder
 cd dist

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Read sshkey from kernel command line and append it to authorized_keys
+
+cat /proc/cmdline | grep -q "sshkey="
+if [[ $? -eq 0 ]]; then
+  mkdir -p /home/tc/.ssh
+  cat /proc/cmdline | sed -E 's/.*sshkey="(.*)".*/\1/' > /home/tc/.ssh/authorized_keys
+fi
