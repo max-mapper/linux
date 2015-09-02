@@ -1,4 +1,7 @@
 ```
+# dependencies
+wget, apt-get install squashfs-tools/brew install squashfs
+
 # build it
 ./build.sh
 

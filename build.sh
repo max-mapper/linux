@@ -1,5 +1,5 @@
 #!/bin/sh
-# prerequisites: linux, wget, apt-get install squashfs-tools
+# prerequisites: wget, apt-get install squashfs-tools/brew install squashfs
 
 export TCL_SERVER=http://tinycorelinux.net/6.x/x86_64
 
