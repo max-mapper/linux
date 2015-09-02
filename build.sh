@@ -6,9 +6,11 @@ export TCL_SERVER=http://tinycorelinux.net/6.x/x86_64
 # generate ssh keypair
 ssh-keygen -f hypercore.rsa -t rsa -N ''
 
-# download everything
-wget -c -P downloads/ \
-  $TCL_SERVER/release/distribution_files/corepure64.gz \
+# download rootfs + kernel
+wget -c $TCL_SERVER/release/distribution_files/{corepure64.gz,vmlinuz64}
+
+# download packages
+wget -c -P tczs/ \
   $TCL_SERVER/tcz/pkg-config.tcz \
   $TCL_SERVER/tcz/make.tcz \
   $TCL_SERVER/tcz/gcc.tcz \
@@ -22,13 +24,13 @@ wget -c -P downloads/ \
   $TCL_SERVER/tcz/wget.tcz
 
 # install packages
-for f in downloads/*.tcz; do echo "Unpacking $f" && unsquashfs -f -d dist $f; done
+for f in tczs/*.tcz; do echo "Unpacking $f" && unsquashfs -f -d dist $f; done
 
 # enter dist folder
 cd dist
 
 # extract rootfs
-zcat < ../downloads/corepure64.gz | sudo cpio -i -d
+zcat < ../corepure64.gz | sudo cpio -i -d
 
 # enables terminal (i think, blindly copied from xhyve example)
 sudo sed -ix "/^# ttyS0$/s#^..##" etc/securetty
