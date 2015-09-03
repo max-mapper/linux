@@ -1,6 +1,7 @@
 .DS_Store
-downloads/
+tczs/
 dist/
+corepure64.gz
 vmlinuz64
 initrd.gz
 hypercore.rsa

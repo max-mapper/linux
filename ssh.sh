@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# grep the mac os dhcp lease log for the ip leased to a specific hostname
+# assumes hostname is unique (e.g. no one host would ever lease twice)
 get_ip() {
     local uuid=$1
     awk '
