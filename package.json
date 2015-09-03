@@ -1,11 +1,29 @@
 {
   "name": "linux",
   "version": "1.0.0",
-  "description": "",
+  "description": "run linux",
   "main": "index.js",
+  "bin": {
+    "linux": "cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cat-names": "^1.0.2",
+    "daemonspawn": "^1.0.1",
+    "is-running": "^1.0.5",
+    "os-tmpdir": "^1.0.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxogden/linux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxogden/linux/issues"
+  },
+  "homepage": "https://github.com/maxogden/linux#readme"
 }

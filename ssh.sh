@@ -23,5 +23,5 @@ get_ip() {
     ' /var/db/dhcpd_leases
 }
 
-LOGIN="tc@$(get_ip $(cat ./CURRENT_HOSTNAME)) -i $1"
+LOGIN="tc@$(get_ip $1) -i $2"
 ssh -o StrictHostKeyChecking=no $LOGIN ${@:2}
