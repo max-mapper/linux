@@ -3,6 +3,11 @@
 
 export TCL_SERVER=http://tinycorelinux.net/6.x/x86_64
 
+# exit on any error
+set -e
+
+mkdir -p dist
+
 # generate ssh keypair
 ssh-keygen -f hypercore.rsa -t rsa -N ''
 
