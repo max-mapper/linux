@@ -22,4 +22,4 @@ get_ip() {
 }
 
 LOGIN="tc@$(get_ip $(cat ./CURRENT_HOSTNAME)) -i $1"
-ssh $LOGIN
+ssh -o StrictHostKeyChecking=no $LOGIN ${@:2}
