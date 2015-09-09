@@ -70,8 +70,7 @@ function handle (cmds, opts) {
       opts.stdout = fs.openSync(opts.stdout, 'a')
       opts.stderr = fs.openSync(opts.stderr, 'a')
       
-      // var linux = daemon.spawn(bootCmd, opts)
-      console.log(bootCmd)
+      var linux = daemon.spawn(bootCmd, opts)
       fs.writeFileSync(linuxPid, linux.pid.toString())
       fs.writeFileSync(linuxHostname, hostname)
       console.log('Linux is booting', {pid: linux.pid, hostname: hostname})
