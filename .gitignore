@@ -8,3 +8,4 @@ initrd.gz
 hypercore.rsa
 hypercore.rsa.pub
 CURRENT_HOSTNAME
+linux/

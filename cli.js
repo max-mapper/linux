@@ -6,19 +6,28 @@ var os = require('os')
 var path = require('path')
 var daemon = require('daemonspawn')
 var catNames = require('cat-names')
+var keypair = require('keypair')
+var forge = require('node-forge')
+var mkdirp = require('mkdirp')
 var args = require('minimist')(process.argv.slice(2))
-
-var linuxPid = '/tmp/npm-linux-pid'
 
 handle(args._, args) 
 
 function handle (cmds, opts) {
+  
+  var dir = opts.path || opts.p || path.join(process.cwd(), 'linux')
+  if (!opts.stderr) opts.stderr = path.join(dir, 'stderr.log')
+  if (!opts.stdout) opts.stdout = path.join(dir, 'stdout.log')
+  var linuxPid = opts.pid || path.join(dir, 'linux.pid')
+  var linuxHostname = path.join(dir, 'hostname')
+  var keyPath = path.join(dir, 'id_rsa')
+
   var cmd = cmds[0]
   if (typeof cmd === 'undefined') {
     return console.log(
       'Usage:   linux <boot,status,ssh,halt,kill> [args..]\n' +
       '\n' +
-      'boot     boots up linux\n' +
+      'boot     boots up linux in ./linux\n' +
       'status   checks if linux is running or not\n' +
       'ssh      sshes into linux and attaches the session to your terminal\n' +
       'halt     runs sudo halt in linux, initiating a graceful shutdown\n' +
@@ -28,6 +37,9 @@ function handle (cmds, opts) {
   }
 
   if (cmd === 'boot') {
+    if (!fs.existsSync(dir)) mkdirp.sync(dir)
+    if (!fs.existsSync(keyPath)) saveNewKeypairSync()
+
     getPid()
     
     function getPid () {
@@ -51,18 +63,27 @@ function handle (cmds, opts) {
     }
     
     function boot () {
-      var uuid = [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase()
-      var bootCmd = bootCommand(uuid, opts.key)
+      var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase()
+      var bootCmd = bootCommand(hostname, keyPath)
 
       // convert filenames to file descriptors
-      if (opts.stdout) opts.stdout = fs.openSync(opts.stdout, 'a')
-      if (opts.stderr) opts.stderr = fs.openSync(opts.stderr, 'a')
+      opts.stdout = fs.openSync(opts.stdout, 'a')
+      opts.stderr = fs.openSync(opts.stderr, 'a')
       
-      var linux = daemon.spawn(bootCmd, opts)
-      fs.writeFile(linuxPid, linux.pid.toString(), function (err) {
-        if (err) throw err
-        console.log('Linux is booting', {pid: linux.pid})
-      })
+      // var linux = daemon.spawn(bootCmd, opts)
+      console.log(bootCmd)
+      fs.writeFileSync(linuxPid, linux.pid.toString())
+      fs.writeFileSync(linuxHostname, hostname)
+      console.log('Linux is booting', {pid: linux.pid, hostname: hostname})
+    }
+    
+    function saveNewKeypairSync () {
+      var pair = keypair()
+      var publicKey = forge.pki.publicKeyFromPem(pair.public)
+      var ssh = forge.ssh.publicKeyToOpenSSH(publicKey, 'root@localhost')
+      
+      fs.writeFileSync(keyPath, pair.private)
+      fs.writeFileSync(keyPath + '.pub', ssh)
     }
     
     return
@@ -102,7 +123,7 @@ function bootCommand (host, key) {
   var kernel = __dirname + '/vmlinuz64'
   var initrd = __dirname + '/initrd.gz'
   var xhyve = __dirname + '/xhyve'
-  var cmdline = "earlyprintk=serial host=" + host + ' sshkey=\\"' + fs.readFileSync(key).toString().trim() + '\\"'
+  var cmdline = "earlyprintk=serial host=" + host + ' sshkey=\\"' + fs.readFileSync(key + '.pub').toString().trim() + '\\"'
   var xhyveArgs = '-A -m 1G -s 0:0,hostbridge -s 31,lpc -l com1,stdio -s 2:0,virtio-net'
   var bootCmd = xhyve + ' ' + xhyveArgs + ' -f kexec,' + kernel + ',' + initrd + ',"' + cmdline + '"'
   return bootCmd
