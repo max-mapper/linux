@@ -15,12 +15,11 @@
   "dependencies": {
     "cat-names": "^1.0.2",
     "daemonspawn": "^1.0.1",
-    "is-running": "^1.0.5",
     "keypair": "^1.0.0",
+    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "node-forge": "^0.6.34",
-    "nugget": "^1.5.4",
-    "os-tmpdir": "^1.0.1"
+    "nugget": "^1.5.4"
   },
   "devDependencies": {},
   "repository": {
