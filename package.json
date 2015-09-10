@@ -1,6 +1,6 @@
 {
   "name": "linux",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "run linux",
   "main": "index.js",
   "bin": {
