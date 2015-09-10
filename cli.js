@@ -57,7 +57,7 @@ function handle (cmds, opts) {
     if (!fs.existsSync(dir)) return console.log('Error: no linux config folder found, run linux init first')
 
     // ensure key permissions are correct
-    (fs.accessSync || fs.existsSync)(keyPath)
+    if (fs.accessSync) fs.accessSync(keyPath)
 
     getPid()
 
