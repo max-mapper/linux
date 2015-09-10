@@ -2,7 +2,9 @@
 
 **pre-alpha, proceed with caution**
 
-npm installs [hyperos linux](https://github.com/hyperos/hyperos.github.io) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
+npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
+
+This module is a low level component that is part of [HyperOS](http://hyperos.io/). We are working on integrating the other HyperOS components to support advanced functionality like running containers, sharing filesystems etc.
 
 Mac OS Yosemite only for now, Windows support coming later through Hyper-V integration (see [this issue](https://github.com/maxogden/linux/issues/4) if you wanna help)
 
