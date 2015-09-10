@@ -200,7 +200,7 @@ function handle (cmds, opts) {
     parseIp(hostname, function (err, ip) {
       if (err) throw err
       if (!ip) return console.error('Error: Could not find ip for linux hostname', hostname)
-      var args = ['-i', keyPath, '-o', 'StrictHostKeyChecking=no', 'tc@' + ip]
+      var args = ['-i', keyPath, '-o', 'StrictHostKeyChecking=no', '-o', 'LogLevel=ERROR', 'tc@' + ip]
       if (commands) args = args.concat(commands)
       child.spawn('ssh', args, {stdio: 'inherit'})
     })
