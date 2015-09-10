@@ -150,16 +150,14 @@ function handle (cmds, opts) {
     var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase().replace(/\s/g, '-')
     var xhyve = __dirname + '/xhyve'
     var bootArgs = createBootArgs(hostname, keyPath)
+    var cmd = xhyve + ' ' + bootArgs.join(' ')
 
-    if (opts.debug) return console.log(xhyve + ' ' + bootArgs.join(' '))
+    if (opts.debug) return console.log(cmd)
 
-    // TODO switch back to daemonspawn for the spawning
     // convert filenames to file descriptors
     opts.stdio = ['ignore', fs.openSync(opts.stdout, 'a'), fs.openSync(opts.stderr, 'a')]
     opts.detached = true
-    var linux = child.spawn(xhyve, bootArgs, opts)
-    linux.unref()
-
+    var linux = daemon.spawn(cmd, opts)
     var pid = linux.pid
     fs.writeFileSync(linuxPid, pid.toString())
     fs.writeFileSync(linuxHostname, hostname)
@@ -238,7 +236,7 @@ function handle (cmds, opts) {
   function createBootArgs (host, key) {
     var kernel = __dirname + '/vmlinuz64'
     var initrd = __dirname + '/initrd.gz'
-    var keyString = '"' + fs.readFileSync(key + '.pub').toString().trim() + '"'
+    var keyString = '\\"' + fs.readFileSync(key + '.pub').toString().trim() + '\\"'
     var cmdline = 'earlyprintk=serial host=' + host + ' sshkey=' + keyString
     var args = [
       '-A',
@@ -247,7 +245,7 @@ function handle (cmds, opts) {
       '-s', '31,lpc',
       '-l', 'com1,stdio',
       '-s', '2:0,virtio-net',
-      '-f', ['kexec', kernel, initrd, '"' + cmdline + '"'].join(',')
+      '-f', '"' + ['kexec', kernel, initrd, cmdline].join(',') + '"'
     ]
     return args
   }
