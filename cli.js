@@ -131,7 +131,7 @@ function handle (cmds, opts) {
       var publicKey = forge.pki.publicKeyFromPem(pair.public)
       var ssh = forge.ssh.publicKeyToOpenSSH(publicKey, 'root@localhost') // todo would whoami + hostname be better?
       
-      fs.writeFileSync(keyPath, pair.private, {mode: 0o600})
+      fs.writeFileSync(keyPath, pair.private, {mode: 384}) // 0600
       fs.writeFileSync(keyPath + '.pub', ssh)
     }
     
