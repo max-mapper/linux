@@ -28,6 +28,7 @@ function handle (cmds, opts) {
       'Usage:     linux <command> [args...]\n' +
       '\n' +
       'Commands:\n' +
+      '  init     creates a new ./linux folder in this directory to hold config\n' +
       '  boot     boots up linux from config in ./linux\n' +
       '  status   checks if linux is running or not\n' +
       '  ssh      sshes into linux and attaches the session to your terminal\n' +
@@ -37,10 +38,21 @@ function handle (cmds, opts) {
       '  pid      get the pid of the linux process'
     )
   }
+  
+  if (cmd === 'init') {
+    if (fs.existsSync(dir)) return console.log('Error: linux config folder already exists, skipping init')
+    mkdirp.sync(dir)
+    if (!fs.existsSync(keyPath)) saveNewKeypairSync()
+    console.log('Created new config folder at', dir)
+    return
+  }
 
   if (cmd === 'boot') {
-    if (!fs.existsSync(dir)) mkdirp.sync(dir)
-    if (!fs.existsSync(keyPath)) saveNewKeypairSync()
+    // ensure linux folder exists
+    if (!fs.existsSync(dir)) return console.log('Error: no linux config folder found, run linux init first')
+    
+    // ensure key permissions are correct
+    fs.accessSync(keyPath)
 
     getPid()
     
@@ -64,9 +76,11 @@ function handle (cmds, opts) {
     }
     
     function boot () {
-      var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase()
+      var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase().replace(/\s/g, '-')
       var xhyve = __dirname + '/xhyve'
       var bootArgs = createBootArgs(hostname, keyPath)
+
+      if (opts.debug) return console.log(xhyve + ' ' + bootArgs.join(' '))
 
       // TODO switch back to daemonspawn for the spawning
       // convert filenames to file descriptors
@@ -117,7 +131,7 @@ function handle (cmds, opts) {
       var publicKey = forge.pki.publicKeyFromPem(pair.public)
       var ssh = forge.ssh.publicKeyToOpenSSH(publicKey, 'root@localhost') // todo would whoami + hostname be better?
       
-      fs.writeFileSync(keyPath, pair.private)
+      fs.writeFileSync(keyPath, pair.private, {mode: 0o600})
       fs.writeFileSync(keyPath + '.pub', ssh)
     }
     
