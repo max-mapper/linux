@@ -34,10 +34,12 @@ function handle (cmds, opts) {
       '  boot     boots up linux from config in ./linux\n' +
       '  status   checks if linux is running or not\n' +
       '  ssh      sshes into linux and attaches the session to your terminal\n' +
+      '  ip       get the ip of the linux vm\n' +
       '  run      runs a single command over ssh\n' +
       '  halt     runs sudo halt in linux, initiating a graceful shutdown\n' +
       '  kill     immediately ungracefully kills the linux process with SIGKILL\n' +
-      '  pid      get the pid of the linux process'
+      '  pid      get the pid of the linux process\n' +
+      ''
     )
   }
 
@@ -89,6 +91,15 @@ function handle (cmds, opts) {
         if (err) throw err
         console.log('Linux has been killed')
       })
+    })
+    return
+  }
+
+  if (cmd === 'ip') {
+    var hostname = fs.readFileSync(linuxHostname).toString()
+    parseIp(hostname, function (err, ip) {
+      if (err) throw err
+      console.log(ip)
     })
     return
   }
