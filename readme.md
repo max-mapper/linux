@@ -25,6 +25,7 @@ $ linux
 Usage:     linux <command> [args...]
 
 Commands:
+  init     creates a new ./linux folder in this directory to hold config
   boot     boots up linux from config in ./linux
   status   checks if linux is running or not
   ssh      sshes into linux and attaches the session to your terminal
@@ -37,6 +38,10 @@ Commands:
 ### example
 
 ```
+# initialize a linux folder to hold state
+$ linux init
+Created new config folder at /Users/max/test/linux
+
 # starts a linux daemon
 $ sudo linux boot
 Linux has booted { ip: '192.168.64.127',
