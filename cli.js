@@ -11,10 +11,12 @@ var forge = require('node-forge')
 var mkdirp = require('mkdirp')
 var args = require('minimist')(process.argv.slice(2))
 
-handle(args._, args) 
+handle(args._, args)
 
 function handle (cmds, opts) {
-  
+  // needs yosemite 10.10.3 or above for xhyve
+  if (os.platform() !== 'darwin' || os.release() < '14.3.0') return console.error('Error: Mac OS Yosemite 10.10.3 or above required')
+
   var dir = opts.path || opts.p || path.join(process.cwd(), 'linux')
   if (!opts.stderr) opts.stderr = path.join(dir, 'stderr.log')
   if (!opts.stdout) opts.stdout = path.join(dir, 'stdout.log')
@@ -38,7 +40,7 @@ function handle (cmds, opts) {
       '  pid      get the pid of the linux process'
     )
   }
-  
+
   if (cmd === 'init') {
     if (fs.existsSync(dir)) return console.log('Error: linux config folder already exists, skipping init')
     mkdirp.sync(dir)
@@ -48,96 +50,20 @@ function handle (cmds, opts) {
   }
 
   if (cmd === 'boot') {
+    // capability checks
+    if (process.getuid() !== 0) return console.error('Error: must run boot with sudo')
+
     // ensure linux folder exists
     if (!fs.existsSync(dir)) return console.log('Error: no linux config folder found, run linux init first')
-    
+
     // ensure key permissions are correct
     fs.accessSync(keyPath)
 
     getPid()
-    
-    function getPid () {
-      fs.exists(linuxPid, function (exists) {
-        if (!exists) return boot()
-        readPid(function (err, pid) {
-          if (err) throw err
-          if (!pid) return boot()
-          getStatus(pid)
-        })
-      })
-    }
-    
-    function getStatus (pid) {
-      daemon.status(pid, function (err, running) {
-        if (err) throw err
-        if (running) return console.error('Linux is already running')
-        boot()
-      })      
-    }
-    
-    function boot () {
-      var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase().replace(/\s/g, '-')
-      var xhyve = __dirname + '/xhyve'
-      var bootArgs = createBootArgs(hostname, keyPath)
 
-      if (opts.debug) return console.log(xhyve + ' ' + bootArgs.join(' '))
-
-      // TODO switch back to daemonspawn for the spawning
-      // convert filenames to file descriptors
-      opts.stdio = ['ignore', fs.openSync(opts.stdout, 'a'), fs.openSync(opts.stderr, 'a')]
-      opts.detached = true
-      var linux = child.spawn(xhyve, bootArgs, opts)
-      linux.unref()
-      
-      var pid = linux.pid
-      fs.writeFileSync(linuxPid, pid.toString())
-      fs.writeFileSync(linuxHostname, hostname)
-      pollIp(hostname, pid)
-    }
-    
-    function pollIp (hostname, pid) {
-      var timeout = Date.now() + (opts.timeout || 1000 * 15)
-
-      check()
-      
-      function check () {
-        if (Date.now() > timeout) {
-          console.error('Error: Timed out waiting for linux to boot')
-          kill()
-          return
-        }
-        
-        parseIp(hostname, function (err, ip) {
-          if (err) {
-            console.error(err)
-            kill()
-            return
-          }
-          if (!ip) return setTimeout(check, 1000)
-          console.log('Linux has booted', {ip: ip, hostname: hostname, pid: pid})
-        })
-      }
-      
-      function kill () {
-        daemon.kill(pid, function (err) {
-          if (err) throw err
-          process.exit(1)
-        })
-      }
-    }
-    
-    function saveNewKeypairSync () {
-      var pair = keypair()
-      var publicKey = forge.pki.publicKeyFromPem(pair.public)
-      var ssh = forge.ssh.publicKeyToOpenSSH(publicKey, 'root@localhost') // todo would whoami + hostname be better?
-      
-      fs.writeFileSync(keyPath, pair.private, {mode: 384}) // 0600
-      fs.writeFileSync(keyPath + '.pub', ssh)
-    }
-    
     return
   }
-  
+
   if (cmd === 'pid') {
     readPid(function (err, pid) {
       if (err) throw err
@@ -166,11 +92,11 @@ function handle (cmds, opts) {
     })
     return
   }
-  
+
   if (cmd === 'ssh') {
     return ssh()
   }
-  
+
   if (cmd === 'run') {
     // run is special, we want to forward raw args to ssh
     var runIdx
@@ -182,14 +108,93 @@ function handle (cmds, opts) {
     }
     return ssh(process.argv.slice(runIdx + 1))
   }
-  
+
   if (cmd === 'halt') {
     return ssh(['sudo', 'halt'])
     // todo wait till xhyve actually exits
   }
-  
+
   console.log(cmd, 'is not a valid command')
-  
+
+  function getPid () {
+    fs.exists(linuxPid, function (exists) {
+      if (!exists) return boot()
+      readPid(function (err, pid) {
+        if (err) throw err
+        if (!pid) return boot()
+        getStatus(pid)
+      })
+    })
+  }
+
+  function getStatus (pid) {
+    daemon.status(pid, function (err, running) {
+      if (err) throw err
+      if (running) return console.error('Linux is already running')
+      boot()
+    })
+  }
+
+  function boot () {
+    var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase().replace(/\s/g, '-')
+    var xhyve = __dirname + '/xhyve'
+    var bootArgs = createBootArgs(hostname, keyPath)
+
+    if (opts.debug) return console.log(xhyve + ' ' + bootArgs.join(' '))
+
+    // TODO switch back to daemonspawn for the spawning
+    // convert filenames to file descriptors
+    opts.stdio = ['ignore', fs.openSync(opts.stdout, 'a'), fs.openSync(opts.stderr, 'a')]
+    opts.detached = true
+    var linux = child.spawn(xhyve, bootArgs, opts)
+    linux.unref()
+
+    var pid = linux.pid
+    fs.writeFileSync(linuxPid, pid.toString())
+    fs.writeFileSync(linuxHostname, hostname)
+    pollIp(hostname, pid)
+  }
+
+  function pollIp (hostname, pid) {
+    var timeout = Date.now() + (opts.timeout || 1000 * 15)
+
+    check()
+
+    function check () {
+      if (Date.now() > timeout) {
+        console.error('Error: Timed out waiting for linux to boot')
+        kill()
+        return
+      }
+
+      parseIp(hostname, function (err, ip) {
+        if (err) {
+          console.error(err)
+          kill()
+          return
+        }
+        if (!ip) return setTimeout(check, 1000)
+        console.log('Linux has booted', {ip: ip, hostname: hostname, pid: pid})
+      })
+    }
+
+    function kill () {
+      daemon.kill(pid, function (err) {
+        if (err) throw err
+        process.exit(1)
+      })
+    }
+  }
+
+  function saveNewKeypairSync () {
+    var pair = keypair()
+    var publicKey = forge.pki.publicKeyFromPem(pair.public)
+    var ssh = forge.ssh.publicKeyToOpenSSH(publicKey, 'root@localhost') // todo would whoami + hostname be better?
+
+    fs.writeFileSync(keyPath, pair.private, {mode: 384}) // 0600
+    fs.writeFileSync(keyPath + '.pub', ssh)
+  }
+
   function ssh (commands) {
     var hostname = fs.readFileSync(linuxHostname).toString()
     parseIp(hostname, function (err, ip) {
@@ -200,7 +205,7 @@ function handle (cmds, opts) {
       child.spawn('ssh', args, {stdio: 'inherit'})
     })
   }
-  
+
   function linuxStatus (cb) {
     readPid(function (err, pid) {
       if (err) throw err
@@ -210,7 +215,7 @@ function handle (cmds, opts) {
       })
     })
   }
-  
+
   function parseIp (hostname, cb) {
     child.exec(__dirname + '/get-ip.sh ' + hostname, function (err, stdout, stderr) {
       if (err) return cb(err)
@@ -218,12 +223,12 @@ function handle (cmds, opts) {
       cb(null, ip)
     })
   }
-  
+
   function createBootArgs (host, key) {
     var kernel = __dirname + '/vmlinuz64'
     var initrd = __dirname + '/initrd.gz'
     var keyString = '"' + fs.readFileSync(key + '.pub').toString().trim() + '"'
-    var cmdline = "earlyprintk=serial host=" + host + " sshkey=" + keyString
+    var cmdline = 'earlyprintk=serial host=' + host + ' sshkey=' + keyString
     var args = [
       '-A',
       '-m', '1G',
@@ -244,5 +249,4 @@ function handle (cmds, opts) {
       cb(null, pid)
     })
   }
-  
 }
