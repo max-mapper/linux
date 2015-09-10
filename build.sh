@@ -1,25 +1,10 @@
 #!/bin/sh
-# prerequisites: wget, apt-get install squashfs-tools/brew install squashfs
-
-export TCL_SERVER=http://tinycorelinux.net/6.x/x86_64
+# prerequisites: apt-get install squashfs-tools/brew install squashfs
 
 # exit on any error
 set -e
 
 mkdir -p dist
-
-# generate ssh keypair
-ssh-keygen -f hypercore.rsa -t rsa -N ''
-
-# download rootfs + kernel
-wget -c $TCL_SERVER/release/distribution_files/{corepure64.gz,vmlinuz64}
-
-# download packages
-wget -c -P tczs/ \
-  $TCL_SERVER/tcz/fuse.tcz \
-  $TCL_SERVER/tcz/openssl-1.0.0.tcz \
-  $TCL_SERVER/tcz/openssh.tcz \
-  $TCL_SERVER/tcz/iproute2.tcz
 
 # install packages
 for f in tczs/*.tcz; do echo "Unpacking $f" && unsquashfs -f -d dist $f; done
