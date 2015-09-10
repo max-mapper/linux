@@ -11,6 +11,9 @@ Mac OS Yosemite only for now, Windows support coming later through Hyper-V integ
  - xhyve is a very new project, expect bugs! You must be running OS X 10.10.3 Yosemite or later and 2010 or later Mac for this to work.
  - if you happen to be running any version of VirtualBox prior to 5.0 then xhyve will crash your system either if VirtualBox is running or had been run previously after the last reboot (see xhyve's issues [#5](mist64/xhyve#5) and [#9](mist64/xhyve#9) for the full context). So, if you are unable to update VirtualBox to version 5, or later, and were using it in your current session please do restart your Mac before attempting to run xhyve.
  - (these warnings were borrowed from [coreos-xhyve](https://github.com/coreos/coreos-xhyve))
+ 
+[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
+[![Build Status](https://travis-ci.org/maxogden/linux.svg?branch=master)](https://travis-ci.org/maxogden/linux)
 
 ### installation
 
