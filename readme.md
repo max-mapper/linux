@@ -2,7 +2,7 @@
 
 **pre-alpha, proceed with caution**
 
-npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
+npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
 
 This module is a low level component that is part of [HyperOS](http://hyperos.io/). We are working on integrating the other HyperOS components to support advanced functionality like running containers, sharing filesystems etc.
 
@@ -24,6 +24,13 @@ npm install linux -g
 ```
 
 ### usage
+
+Quickstart:
+
+1. Run `linux init` in a folder where you want to store your linux runtime config
+2. Run `sudo linux boot` to start the local linux server daemon
+3. Run `linux ssh` to log in to the server daemon over ssh
+4. Run `linux halt` to stop the server daemon when you're done
 
 ```
 $ linux
