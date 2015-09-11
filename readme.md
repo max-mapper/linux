@@ -1,6 +1,6 @@
 # linux
 
-**pre-alpha, proceed with caution**
+**beta software! proceed with caution**
 
 npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
 
@@ -45,6 +45,7 @@ Commands:
   halt     runs sudo halt in linux, initiating a graceful shutdown
   kill     immediately ungracefully kills the linux process with SIGKILL
   pid      get the pid of the linux process
+  ps       print all linux processes running on this machine
 ```
 
 ### example

@@ -9,6 +9,7 @@ var catNames = require('cat-names')
 var keypair = require('keypair')
 var forge = require('node-forge')
 var mkdirp = require('mkdirp')
+var psjson = require('psjson')
 var args = require('minimist')(process.argv.slice(2))
 
 handle(args._, args)
@@ -23,6 +24,7 @@ function handle (cmds, opts) {
   var linuxPid = opts.pid || path.join(dir, 'linux.pid')
   var linuxHostname = path.join(dir, 'hostname')
   var keyPath = path.join(dir, 'id_rsa')
+  var xhyve = __dirname + '/xhyve'
 
   var cmd = cmds[0]
   if (typeof cmd === 'undefined') {
@@ -39,6 +41,7 @@ function handle (cmds, opts) {
       '  halt     runs sudo halt in linux, initiating a graceful shutdown\n' +
       '  kill     immediately ungracefully kills the linux process with SIGKILL\n' +
       '  pid      get the pid of the linux process\n' +
+      '  ps       print all linux processes running on this machine' +
       ''
     )
   }
@@ -124,6 +127,10 @@ function handle (cmds, opts) {
     return ssh(['sudo', 'halt'])
     // todo wait till xhyve actually exits
   }
+  
+  if (cmd === 'ps') {
+    return ps()
+  }
 
   console.log(cmd, 'is not a valid command')
 
@@ -148,9 +155,9 @@ function handle (cmds, opts) {
 
   function boot () {
     var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase().replace(/\s/g, '-')
-    var xhyve = __dirname + '/xhyve'
     var bootArgs = createBootArgs(hostname, keyPath)
-    var cmd = xhyve + ' ' + bootArgs.join(' ')
+    var launchPath = 'LAUNCHPATH=' + process.cwd()
+    var cmd = xhyve + ' ' + bootArgs.join(' ') + ' ' + launchPath
 
     if (opts.debug) return console.log(cmd)
 
@@ -257,5 +264,19 @@ function handle (cmds, opts) {
       if (isNaN(pid)) return cb()
       cb(null, pid)
     })
+  }
+  
+  function ps () {
+    psjson.ps('ps -eaf', function(err, procs) {
+      if (err) return console.error(err)
+      procs.rows.forEach(function (proc) {
+        if (proc.pid === process.pid) return // its the ps process
+        if (proc.CMD.indexOf(xhyve) === -1) return // was not spawned by us
+        var procDir = proc.CMD.split('LAUNCHPATH=')[1]
+        if (opts.json) return console.log(JSON.stringify({pid: proc.PID, dir: procDir, uptime: proc.TIME}))
+        else console.log('PID: ' + proc.PID + ', ' + 'DIR: ' + procDir + ', ' + 'UPTIME: ' + proc.TIME)
+      })
+    })
+
   }
 }
