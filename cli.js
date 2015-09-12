@@ -277,6 +277,5 @@ function handle (cmds, opts) {
         else console.log('PID: ' + proc.PID + ', ' + 'DIR: ' + procDir + ', ' + 'UPTIME: ' + proc.TIME)
       })
     })
-
   }
 }
