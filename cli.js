@@ -127,7 +127,7 @@ function handle (cmds, opts) {
     return ssh(['sudo', 'halt'])
     // todo wait till xhyve actually exits
   }
-  
+
   if (cmd === 'ps') {
     return ps()
   }
@@ -265,9 +265,9 @@ function handle (cmds, opts) {
       cb(null, pid)
     })
   }
-  
+
   function ps () {
-    psjson.ps('ps -eaf', function(err, procs) {
+    psjson.ps('ps -eaf', function (err, procs) {
       if (err) return console.error(err)
       procs.rows.forEach(function (proc) {
         if (proc.pid === process.pid) return // its the ps process
