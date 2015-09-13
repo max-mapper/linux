@@ -4,7 +4,7 @@
 
 npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
 
-This module is a low level component that is part of [HyperOS](http://hyperos.io/). We are working on integrating the other HyperOS components to support advanced functionality like running containers, sharing filesystems etc.
+This module is a low level component that is part of [HyperOS](http://hyperos.io/), made by the team working on the [Dat](http://dat-data.com/) data version control tool. We are working on integrating the other HyperOS components to support advanced functionality like running containers, sharing filesystems etc.
 
 Mac OS Yosemite only for now, Windows support coming later through Hyper-V integration (see [this issue](https://github.com/maxogden/linux/issues/4) if you wanna help)
 
@@ -16,6 +16,7 @@ Mac OS Yosemite only for now, Windows support coming later through Hyper-V integ
  
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 [![Build Status](https://travis-ci.org/maxogden/linux.svg?branch=master)](https://travis-ci.org/maxogden/linux)
+[![dat](http://img.shields.io/badge/Development%20sponsored%20by-dat-green.svg?style=flat)](http://dat-data.com/)
 
 ### installation
 
