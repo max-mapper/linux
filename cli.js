@@ -10,9 +10,10 @@ var keypair = require('keypair')
 var forge = require('node-forge')
 var mkdirp = require('mkdirp')
 var psjson = require('psjson')
-var args = require('minimist')(process.argv.slice(2))
+var minimist = require('minimist')
+var argv = minimist(process.argv.slice(2), {boolean: true})
 
-handle(args._, args)
+handle(argv._, argv)
 
 function handle (cmds, opts) {
   // needs yosemite 10.10.3 or above for xhyve
@@ -120,6 +121,8 @@ function handle (cmds, opts) {
         break
       }
     }
+    // reparse argv so we don't include any run args
+    argv = minimist(process.argv.slice(0, runIdx + 1), {boolean: true})
     return ssh(process.argv.slice(runIdx + 1))
   }
 
@@ -217,6 +220,7 @@ function handle (cmds, opts) {
       if (err) throw err
       if (!ip) return console.error('Error: Could not find ip for linux hostname', hostname)
       var args = ['-i', keyPath, '-o', 'StrictHostKeyChecking=no', '-o', 'LogLevel=ERROR', 'tc@' + ip]
+      if (argv.tty || argv.t) args.unshift('-t')
       if (commands) args = args.concat(commands)
       child.spawn('ssh', args, {stdio: 'inherit'})
     })
