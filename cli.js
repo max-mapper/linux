@@ -222,6 +222,7 @@ function handle (cmds, opts) {
       var args = ['-i', keyPath, '-o', 'StrictHostKeyChecking=no', '-o', 'LogLevel=ERROR', 'tc@' + ip]
       if (argv.tty || argv.t) args.unshift('-t')
       if (commands) args = args.concat(commands)
+      if (opts.debug) console.error('spawning', 'ssh', args)
       child.spawn('ssh', args, {stdio: 'inherit'})
     })
   }
