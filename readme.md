@@ -2,7 +2,11 @@
 
 **beta software! proceed with caution**
 
+Download, install and run Linux on OS X in less than 60 seconds!
+
 npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
+
+See [this youtube video](https://www.youtube.com/watch?v=esNlno79dBw) for a demonstration with a cool soundtrack.
 
 This module is a low level component that is part of [HyperOS](http://hyperos.io/), made by the team working on the [Dat](http://dat-data.com/) data version control tool. We are working on integrating the other HyperOS components to support advanced functionality like running containers, sharing filesystems etc.
 
