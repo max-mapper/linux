@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-var initrd = 'https://github.com/maxogden/hypercore/releases/download/v2.1.0/initrd.gz'
-var kernel = 'https://github.com/maxogden/hypercore/releases/download/v2.1.0/vmlinuz64'
+var initrd = 'https://github.com/maxogden/hypercore/releases/download/v3.0.0/initrd.gz'
+var kernel = 'https://github.com/maxogden/hypercore/releases/download/v3.0.0/vmlinuz64'
 
 var nugget = require('nugget')
 
