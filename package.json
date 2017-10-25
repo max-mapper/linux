@@ -1,6 +1,6 @@
 {
   "name": "linux",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "run linux on mac os",
   "main": "index.js",
   "bin": {
