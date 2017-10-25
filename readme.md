@@ -4,11 +4,11 @@
 
 Download, install and run Linux on OS X in less than 60 seconds!
 
-npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [hyperkit](https://github.com/moby/hyperkit)).
+npm installs [hypercore linux](https://github.com/maxogden/hypercore-linux) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [hyperkit](https://github.com/moby/hyperkit)).
 
 See [this youtube video](https://www.youtube.com/watch?v=esNlno79dBw) for a demonstration with a cool soundtrack.
 
-This module is a low level component that is part of [HyperOS](http://hyperos.io/), made by the team working on the [Dat](http://dat-data.com/) data version control tool. We are working on integrating the other HyperOS components to support advanced functionality like running containers, sharing filesystems etc.
+This module is a low level component that is part of HyperOS, made by the team working on the [Dat](http://dat-data.com/) data version control tool. We are working on integrating the other HyperOS components to support advanced functionality like running containers, sharing filesystems etc.
 
 Mac OS Yosemite only for now, Windows support coming later through Hyper-V integration (see [this issue](https://github.com/maxogden/linux/issues/4) if you wanna help)
 
