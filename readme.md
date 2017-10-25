@@ -4,7 +4,7 @@
 
 Download, install and run Linux on OS X in less than 60 seconds!
 
-npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [xhyve](https://github.com/mist64/xhyve)).
+npm installs [hypercore linux](https://github.com/maxogden/hypercore) (based on [tiny core linux](http://tinycorelinux.net/)) and runs it as a daemon using the new Mac OS Yosemite hypervisor (via [hyperkit](https://github.com/moby/hyperkit)).
 
 See [this youtube video](https://www.youtube.com/watch?v=esNlno79dBw) for a demonstration with a cool soundtrack.
 
@@ -14,8 +14,8 @@ Mac OS Yosemite only for now, Windows support coming later through Hyper-V integ
 
 **WARNING**
 -----------
- - xhyve is a very new project, expect bugs! You must be running OS X 10.10.3 Yosemite or later and 2010 or later Mac for this to work.
- - if you happen to be running any version of VirtualBox prior to 4.3.30 or 5.0 then xhyve will crash your system either if VirtualBox is running or had been run previously after the last reboot (see xhyve's issues [#5](mist64/xhyve#5) and [#9](mist64/xhyve#9) for the full context). So, if you are unable to update VirtualBox to version 4.3.30 or 5, or later, and were using it in your current session please do restart your Mac before attempting to run xhyve.
+ - hyperkit is a very new project, expect bugs! You must be running OS X 10.10.3 Yosemite or later and 2010 or later Mac for this to work.
+ - if you happen to be running any version of VirtualBox prior to 4.3.30 or 5.0 then hyperkit will crash your system either if VirtualBox is running or had been run previously after the last reboot (see xhyve's issues [#5](mist64/xhyve#5) and [#9](mist64/xhyve#9) for the full context). So, if you are unable to update VirtualBox to version 4.3.30 or 5, or later, and were using it in your current session please do restart your Mac before attempting to run xhyve.
  - (these warnings were borrowed from [coreos-xhyve](https://github.com/coreos/coreos-xhyve))
  
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
@@ -70,17 +70,17 @@ Linux has booted { ip: '192.168.64.127',
 $ linux ssh
 Warning: Permanently added '192.168.64.127' (ECDSA) to the list of known hosts.
  __    __    __
-/  \__/  \__/  \__   Welcome to HyperOS Linux! (Based on TinyCore Linux)
-\__/  \__/  \__/  \        hyperos.io              tinycorelinux.net
+/  \__/  \__/  \__   Welcome to HyperOS Linux!
+\__/  \__/  \__/  \ 
    \__/  \__/  \__/
 tc@simon-mittens-snuggles-toby:~$ pwd
-/home/tc
+/root
 tc@simon-mittens-snuggles-toby:~$ exit
 Connection to 192.168.64.127 closed.
 
 # run a single command over ssh
-$ linux run uname -a
-Linux simon-mittens-snuggles-toby 3.16.6-tinycore64 #777 SMP Thu Oct 16 10:21:00 UTC 2014 x86_64 GNU/Linux
+$ linux run hostname
+simon-mittens-snuggles-toby
 
 $ linux status
 Linux is running { pid: 20665 }
@@ -95,5 +95,4 @@ Linux is not running
 # special thanks
 
 - thanks to [nlf](https://github.com/nlf) (Nathan LaFreniere) for help, if you like docker you should definitely check out his projects [dhyve](https://github.com/nlf/dhyve) and [dhyve-os](https://github.com/nlf/dhyve-os/)
-- thanks to [tiny core linux](http://tinycorelinux.net/) for being awesome
 - thanks to [boot2docker](https://github.com/boot2docker/boot2docker) for some stuff I borrowed from their [rootfs folder](https://github.com/boot2docker/boot2docker/tree/master/rootfs/rootfs)

@@ -1,7 +1,7 @@
 {
   "name": "linux",
   "version": "3.0.0",
-  "description": "run linux",
+  "description": "run linux on mac os",
   "main": "index.js",
   "bin": {
     "linux": "cli.js"
@@ -10,7 +10,7 @@
     "postinstall": "node download.js",
     "test": "standard"
   },
-  "author": "",
+  "author": "max ogden",
   "license": "ISC",
   "dependencies": {
     "cat-names": "^1.0.2",

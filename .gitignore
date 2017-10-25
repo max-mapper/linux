@@ -1,9 +1,7 @@
 .DS_Store
 node_modules
-tczs/
 dist/
-corepure64.gz
-vmlinuz64
+bzImage
 initrd.gz
 hypercore.rsa
 hypercore.rsa.pub

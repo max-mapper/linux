@@ -16,7 +16,7 @@ var argv = minimist(process.argv.slice(2), {boolean: true})
 handle(argv._, argv)
 
 function handle (cmds, opts) {
-  // needs yosemite 10.10.3 or above for xhyve
+  // needs yosemite 10.10.3 or above for hyperkit
   if (os.platform() !== 'darwin' || os.release() < '14.3.0') return console.error('Error: Mac OS Yosemite 10.10.3 or above required')
 
   var dir = opts.path || opts.p || path.join(process.cwd(), 'linux')
@@ -25,7 +25,7 @@ function handle (cmds, opts) {
   var linuxPid = opts.pid || path.join(dir, 'linux.pid')
   var linuxHostname = path.join(dir, 'hostname')
   var keyPath = path.join(dir, 'id_rsa')
-  var xhyve = __dirname + '/xhyve'
+  var hyperkit = __dirname + '/hyperkit'
 
   var cmd = cmds[0]
   if (typeof cmd === 'undefined') {
@@ -128,7 +128,7 @@ function handle (cmds, opts) {
 
   if (cmd === 'halt') {
     return ssh(['sudo', 'halt'])
-    // todo wait till xhyve actually exits
+    // todo wait till hyperkit actually exits
   }
 
   if (cmd === 'ps') {
@@ -160,7 +160,7 @@ function handle (cmds, opts) {
     var hostname = opts.hostname || [catNames.random(), catNames.random(), catNames.random(), catNames.random()].join('-').toLowerCase().replace(/\s/g, '-')
     var bootArgs = createBootArgs(hostname, keyPath)
     var launchPath = 'LAUNCHPATH=' + process.cwd()
-    var cmd = xhyve + ' ' + bootArgs.join(' ') + ' ' + launchPath
+    var cmd = hyperkit + ' ' + bootArgs.join(' ') + ' ' + launchPath
 
     if (opts.debug) return console.log(cmd)
 
@@ -219,7 +219,7 @@ function handle (cmds, opts) {
     parseIp(hostname, function (err, ip) {
       if (err) throw err
       if (!ip) return console.error('Error: Could not find ip for linux hostname', hostname)
-      var args = ['-i', keyPath, '-o', 'StrictHostKeyChecking=no', '-o', 'LogLevel=ERROR', 'tc@' + ip]
+      var args = ['-i', keyPath, '-o', 'StrictHostKeyChecking=no', '-o', 'LogLevel=ERROR', 'root@' + ip]
       if (argv.tty || argv.t) args.unshift('-t')
       if (commands) args = args.concat(commands)
       if (opts.debug) console.error('spawning', 'ssh', args)
@@ -246,17 +246,17 @@ function handle (cmds, opts) {
   }
 
   function createBootArgs (host, key) {
-    var kernel = __dirname + '/vmlinuz64'
+    var kernel = __dirname + '/bzImage'
     var initrd = __dirname + '/initrd.gz'
     var keyString = '\\"' + fs.readFileSync(key + '.pub').toString().trim() + '\\"'
-    var cmdline = 'earlyprintk=serial host=' + host + ' sshkey=' + keyString
+    var cmdline = 'earlyprintk=serial console=ttyS0 host=' + host + ' sshkey=' + keyString
     var args = [
       '-A',
       '-m', '1G',
       '-s', '0:0,hostbridge',
       '-s', '31,lpc',
       '-l', 'com1,stdio',
-      '-s', '2:0,virtio-net',
+      '-s', '3:0,virtio-net',
       '-f', '"' + ['kexec', kernel, initrd, cmdline].join(',') + '"'
     ]
     return args
@@ -276,7 +276,7 @@ function handle (cmds, opts) {
       if (err) return console.error(err)
       procs.rows.forEach(function (proc) {
         if (proc.pid === process.pid) return // its the ps process
-        if (proc.CMD.indexOf(xhyve) === -1) return // was not spawned by us
+        if (proc.CMD.indexOf(hyperkit) === -1) return // was not spawned by us
         var procDir = proc.CMD.split('LAUNCHPATH=')[1]
         if (opts.json) return console.log(JSON.stringify({pid: proc.PID, dir: procDir, uptime: proc.TIME}))
         else console.log('PID: ' + proc.PID + ', ' + 'DIR: ' + procDir + ', ' + 'UPTIME: ' + proc.TIME)
