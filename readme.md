@@ -47,7 +47,7 @@ Commands:
   status   checks if linux is running or not
   ssh      sshes into linux and attaches the session to your terminal
   run      runs a single command over ssh
-  halt     runs sudo halt in linux, initiating a graceful shutdown
+  halt     runs halt in linux, initiating a graceful shutdown
   kill     immediately ungracefully kills the linux process with SIGKILL
   pid      get the pid of the linux process
   ps       print all linux processes running on this machine

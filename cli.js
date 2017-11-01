@@ -39,7 +39,7 @@ function handle (cmds, opts) {
       '  ssh      sshes into linux and attaches the session to your terminal\n' +
       '  ip       get the ip of the linux vm\n' +
       '  run      runs a single command over ssh\n' +
-      '  halt     runs sudo halt in linux, initiating a graceful shutdown\n' +
+      '  halt     runs halt in linux, initiating a graceful shutdown\n' +
       '  kill     immediately ungracefully kills the linux process with SIGKILL\n' +
       '  pid      get the pid of the linux process\n' +
       '  ps       print all linux processes running on this machine' +
@@ -127,7 +127,7 @@ function handle (cmds, opts) {
   }
 
   if (cmd === 'halt') {
-    return ssh(['sudo', 'halt'])
+    return ssh(['halt'])
     // todo wait till hyperkit actually exits
   }
 
@@ -246,13 +246,13 @@ function handle (cmds, opts) {
   }
 
   function createBootArgs (host, key) {
-    var kernel = __dirname + '/bzImage'
-    var initrd = __dirname + '/initrd.gz'
+    var kernel = opts.kernel || (__dirname + '/bzImage')
+    var initrd = opts.initrd || (__dirname + '/initrd.gz')
     var keyString = '\\"' + fs.readFileSync(key + '.pub').toString().trim() + '\\"'
     var cmdline = 'earlyprintk=serial console=ttyS0 host=' + host + ' sshkey=' + keyString
     var args = [
       '-A',
-      '-m', '1G',
+      '-m', opts.m || '1G',
       '-s', '0:0,hostbridge',
       '-s', '31,lpc',
       '-l', 'com1,stdio',
