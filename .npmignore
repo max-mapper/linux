@@ -5,3 +5,4 @@ CURRENT_HOSTNAME
 vmlinuz64
 initrd.gz
 corepure64.gz
+bzImage
