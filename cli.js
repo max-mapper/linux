@@ -257,6 +257,7 @@ function handle (cmds, opts) {
       '-s', '31,lpc',
       '-l', 'com1,stdio',
       '-s', '3:0,virtio-net',
+      '-s', '8,virtio-rnd',
       '-f', '"' + ['kexec', kernel, initrd, cmdline].join(',') + '"'
     ]
     return args
